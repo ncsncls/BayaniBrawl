@@ -393,7 +393,7 @@ function stepThrows(e: GameEngine): void {
       const dmg = Math.max(
         1,
         Math.round(
-          t.damage * a.buffDamage * a.phys.attackMul * v.buffDefense * v.phys.defense,
+          t.damage * BALANCE.damageMul * a.buffDamage * a.phys.attackMul * v.buffDefense * v.phys.defense,
         ),
       );
       if (!v.infiniteHp) v.hp = Math.max(0, v.hp - dmg);
@@ -538,7 +538,6 @@ const AURA: Record<string, string> = {
   sora: '#8cffc0',
   diego: '#6cd0ff',
   kudarat: '#d060ff',
-  mabini: '#9cb8ff',
   magbanua: '#ffd070',
   juanluna: '#ff9a4c',
   goyo: '#7cf0ff',

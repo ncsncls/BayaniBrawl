@@ -124,7 +124,7 @@ export class Fighter {
   constructor(def: FighterDef, index: 0 | 1) {
     this.def = def;
     this.index = index;
-    this.maxHp = def.physics.maxHp;
+    this.maxHp = Math.round(def.physics.maxHp * BALANCE.maxHpMul);
     this.hp = this.maxHp;
     this.facing = index === 0 ? 1 : -1;
   }

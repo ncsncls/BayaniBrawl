@@ -103,7 +103,7 @@ export function applyHit(
     victim.moveFrame <= victim.move.armor[1];
   const armored = !blocked && (armorBuff || !!armorFrames) && !victim.armorUsed;
 
-  let dmg = hit.damage * attacker.buffDamage * attacker.phys.attackMul;
+  let dmg = hit.damage * BALANCE.damageMul * attacker.buffDamage * attacker.phys.attackMul;
   dmg *= victim.buffDefense * victim.phys.defense;
 
   if (blocked) {

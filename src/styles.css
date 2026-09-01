@@ -326,6 +326,7 @@ button:active {
 }
 
 .enemyPick,
+.stagePick,
 .settingsGrid label {
   display: grid;
   gap: 8px;
@@ -424,6 +425,12 @@ canvas {
 .guideRows b {
   color: var(--cyan);
   white-space: nowrap;
+}
+
+.p2Guide {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 216, 60, 0.38);
 }
 
 .controlGuide small {

@@ -36,11 +36,15 @@ export const BALANCE = {
   /** meter */
   meterMax: 300,
   meterBar: 100,
-  meterOnHit: 1.0,
-  meterOnTakeDamage: 1.35,
-  meterOnBlock: 0.45,
-  meterOnCounter: 1.5,
+  meterOnHit: 1.75,
+  meterOnTakeDamage: 2.0,
+  meterOnBlock: 0.8,
+  meterOnCounter: 2.25,
   meterWhiffPenalty: 0,
+
+  /** pace */
+  maxHpMul: 0.72,
+  damageMul: 1.12,
 
   /** Bayani Spirit (comeback) */
   spiritThreshold: 0.25,

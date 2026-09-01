@@ -84,8 +84,9 @@ function drawHud(e: GameEngine, w: number, h: number): void {
   const { ctx } = e;
   const p1 = e.f1;
   const p2 = e.f2;
-  bar(ctx, 26, 18, w * 0.37, 14, p1.hp / p1.maxHp, '#ffd83c', false);
-  bar(ctx, w - 26 - w * 0.37, 18, w * 0.37, 14, p2.hp / p2.maxHp, '#ff4c50', true);
+  const hpW = w * 0.31;
+  bar(ctx, 26, 18, hpW, 10, p1.hp / p1.maxHp, '#ffd83c', false);
+  bar(ctx, w - 26 - hpW, 18, hpW, 10, p2.hp / p2.maxHp, '#ff4c50', true);
   meter(ctx, 28, h - 25, w * 0.3, p1.meter / 300);
   meter(ctx, w - 28 - w * 0.3, h - 25, w * 0.3, p2.meter / 300);
 

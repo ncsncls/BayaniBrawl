@@ -77,6 +77,7 @@ function App() {
   const [mode, setMode] = useState<Mode>('arcade');
   const [selected, setSelected] = useState(0);
   const [enemy, setEnemy] = useState(1);
+  const [stageId, setStageId] = useState(STAGES[0].id);
   const [arcadeStep, setArcadeStep] = useState(0);
   const [save, setSave] = useState<SaveData>(() => loadSave());
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
@@ -119,7 +120,7 @@ function App() {
   };
 
   const beginFight = async () => {
-    await wakeAudio(mode === 'arcade' ? (HOME_STAGE[nextArcadeOpponent] || 'shore') : (HOME_STAGE[foe.id] || 'shore'));
+    await wakeAudio(STAGES.find((s) => s.id === stageId)?.music || 'shore');
     audio.play('fight');
     setSnapshot(null);
     setScreen('fight');
@@ -139,8 +140,10 @@ function App() {
           mode={mode}
           selected={selected}
           enemy={enemy}
+          stageId={stageId}
           setSelected={setSelected}
           setEnemy={setEnemy}
+          setStageId={setStageId}
           onBack={() => setScreen('menu')}
           onFight={beginFight}
         />
@@ -152,7 +155,7 @@ function App() {
           setSave={setSave}
           heroId={hero.id}
           foeId={mode === 'arcade' ? nextArcadeOpponent : foe.id}
-          stageId={mode === 'arcade' && nextArcadeOpponent === BOSS_ID ? BOSS_STAGE : HOME_STAGE[mode === 'arcade' ? nextArcadeOpponent : foe.id] || STAGES[0].id}
+          stageId={stageId || (mode === 'arcade' && nextArcadeOpponent === BOSS_ID ? BOSS_STAGE : HOME_STAGE[mode === 'arcade' ? nextArcadeOpponent : foe.id] || STAGES[0].id)}
           arcadeStep={arcadeStep}
           setArcadeStep={setArcadeStep}
           onSelect={() => setScreen('select')}
@@ -184,7 +187,7 @@ function MainMenu({ onStart, open, wakeAudio }: { onStart: (m: Mode) => void; op
       </div>
       <nav className="menuList">
         <button onClick={() => onStart('arcade')}>ARCADE</button>
-        <button onClick={() => onStart('versus')}>VERSUS CPU</button>
+        <button onClick={() => onStart('versus')}>LOCAL VERSUS</button>
         <button onClick={() => onStart('training')}>TRAINING</button>
         <button onClick={() => onStart('survival')}>SURVIVAL</button>
         <button onClick={() => go('gallery')}>FIGHTERS</button>
@@ -200,8 +203,10 @@ function CharacterSelect(props: {
   mode: Mode;
   selected: number;
   enemy: number;
+  stageId: string;
   setSelected: (n: number) => void;
   setEnemy: (n: number) => void;
+  setStageId: (id: string) => void;
   onBack: () => void;
   onFight: () => void;
 }) {
@@ -231,12 +236,18 @@ function CharacterSelect(props: {
         <Stat name="TECHNIQUE" n={f.stats.technique} />
         {props.mode !== 'arcade' && (
           <label className="enemyPick">
-            CPU
+            {props.mode === 'versus' ? 'PLAYER 2' : 'CPU'}
             <select value={props.enemy} onChange={(e) => props.setEnemy(Number(e.target.value))}>
               {SELECTABLE.map((x, i) => <option key={x.id} value={i}>{x.name}</option>)}
             </select>
           </label>
         )}
+        <label className="stagePick">
+          STAGE
+          <select value={props.stageId} onChange={(e) => props.setStageId(e.target.value)}>
+            {STAGES.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </label>
       </aside>
       <section className="movePanel">
         <h3>MOVE LIST</h3>
@@ -386,9 +397,9 @@ function FightScreen(props: {
       p2: props.foeId,
       stage: props.stageId,
       difficulty: props.save.settings.difficulty,
-      p2Kind: props.mode === 'training' ? 'training' : 'cpu',
+      p2Kind: props.mode === 'training' ? 'training' : props.mode === 'versus' ? 'human' : 'cpu',
       rounds: props.mode === 'survival' || props.mode === 'training' ? 1 : 2,
-      roundTime: props.mode === 'training' ? 999 : 99,
+      roundTime: props.mode === 'training' ? 999 : 70,
       training,
       simpleInputs: props.save.settings.simple,
     };
@@ -485,6 +496,17 @@ function ControlGuide({ mode }: { mode: Mode }) {
         <p><b>I</b><span>GRAB</span></p>
         <p><b>SPACE</b><span>SUPER</span></p>
       </div>
+      {mode === 'versus' && (
+        <div className="guideRows p2Guide">
+          <p><b>ARROWS</b><span>P2 MOVE</span></p>
+          <p><b>NUM 1</b><span>P2 LIGHT</span></p>
+          <p><b>NUM 2</b><span>P2 HEAVY</span></p>
+          <p><b>NUM 3</b><span>P2 SPECIAL</span></p>
+          <p><b>NUM 5</b><span>P2 GRAB</span></p>
+          <p><b>NUM 0</b><span>P2 BLOCK</span></p>
+          <p><b>NUM ENTER</b><span>P2 SUPER</span></p>
+        </div>
+      )}
       {mode === 'training' && <small>TRAINING: dummy blocks, HP and meter stay full.</small>}
       <small className="mobileHint">TOUCH: left pad moves, right buttons attack.</small>
     </aside>

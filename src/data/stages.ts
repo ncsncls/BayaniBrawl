@@ -214,7 +214,6 @@ export const HOME_STAGE: Record<string, string> = {
   sora: 'bamboo',
   diego: 'ilocos',
   kudarat: 'port',
-  mabini: 'intramuros',
   magbanua: 'ilocos',
   juanluna: 'intramuros',
   goyo: 'pass',

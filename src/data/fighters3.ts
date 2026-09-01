@@ -1,6 +1,6 @@
 // ============================================================================
-// ROSTER PART 3 - Apolinario Mabini, Teresa Magbanua, Juan Luna,
-// Gregorio del Pilar, and the original fictional boss ANG ANINO.
+// ROSTER PART 3 - Teresa Magbanua, Juan Luna, Gregorio del Pilar,
+// and the original fictional boss ANG ANINO.
 // ============================================================================
 
 import type { FighterDef } from '../game/types';
@@ -8,181 +8,6 @@ import { mv } from './moveFactory';
 import { buildKit } from './kit';
 import { phys } from './fighters1';
 
-// ---------------------------------------------------------------------------
-// 9. APOLINARIO MABINI
-// ---------------------------------------------------------------------------
-const mabini: FighterDef = {
-  id: 'mabini',
-  name: 'APOLINARIO MABINI',
-  title: 'THE SUBLIME PARALYTIC',
-  style: 'DOCTRINE & SIGIL',
-  archetype: 'Technical strategist',
-  stats: { power: 2, speed: 3, defense: 3, technique: 5 },
-  physics: phys({
-    walkF: 2.3,
-    walkB: 2.4,
-    dashSpeed: 6.0,
-    backdashSpeed: 7.2,
-    jumpV: 10.8,
-    maxHp: 940,
-    defense: 1.06,
-    attackMul: 0.9,
-    weight: 0.9,
-  }),
-  chains: { light: ['l1', 'l2', 'l3'], heavy: ['h1', 'h2'] },
-  moves: {
-    ...buildKit({
-      reach: 1.0,
-      dmg: 0.88,
-      fast: 1,
-      fx: 'energy',
-      heavyAnim: 'cast',
-      names: {
-        l1: 'Sigil Tap',
-        l2: 'Second Clause',
-        l3: 'Decree',
-        h1: 'Doctrine Push',
-        h2: 'Constitution',
-        sweep: 'Low Sigil',
-        over: 'Falling Clause',
-        launch: 'Rising Doctrine',
-        airL: 'Air Sigil',
-        airH: 'Descending Decree',
-        throwF: 'Redirect',
-      },
-    }),
-
-    sp1: mv({
-      id: 'sp1',
-      name: 'TRAP SIGIL',
-      kind: 'special',
-      anim: 'cast',
-      notation: 'DOWN, FORWARD + SPECIAL',
-      startup: 16,
-      active: 4,
-      recovery: 22,
-      cancels: ['super'],
-      projectile: {
-        spawnFrame: 16,
-        ox: 22,
-        oy: 30,
-        vx: 2.2,
-        w: 26,
-        h: 30,
-        damage: 8,
-        hitstun: 26,
-        blockstun: 14,
-        style: 'light',
-        meter: 10,
-        launcher: true,
-      },
-      hits: [],
-      desc: 'A slow drifting sigil that pops the opponent up. Set it, then walk in behind it.',
-    }),
-
-    sp2: mv({
-      id: 'sp2',
-      name: 'EL VERDADERO',
-      kind: 'special',
-      anim: 'cast',
-      notation: 'DOWN, BACK + SPECIAL',
-      startup: 12,
-      active: 5,
-      recovery: 18,
-      cancels: ['super'],
-      projectile: {
-        spawnFrame: 12,
-        ox: 26,
-        oy: 62,
-        vx: 8.0,
-        w: 20,
-        h: 12,
-        damage: 7,
-        hitstun: 18,
-        blockstun: 12,
-        style: 'ink',
-        meter: 8,
-      },
-      hits: [],
-      desc: 'Fast flat projectile. Chips at approach patterns.',
-    }),
-
-    sp3: mv({
-      id: 'sp3',
-      name: 'POSITION PAPER',
-      kind: 'special',
-      anim: 'stance',
-      notation: 'DOWN, DOWN + SPECIAL',
-      startup: 5,
-      active: 14,
-      recovery: 16,
-      counter: { start: 5, end: 19, riposte: 'sp2', absorb: 0.35 },
-      hits: [],
-      desc: 'Counter that answers with a projectile instead of a strike, resetting spacing.',
-    }),
-
-    super: mv({
-      id: 'super',
-      name: 'DECALOGUE',
-      kind: 'super',
-      anim: 'superHit',
-      notation: 'DOWN, FORWARD, DOWN, FORWARD + SUPER',
-      startup: 8,
-      active: 6,
-      recovery: 30,
-      meterCost: 100,
-      freeze: 34,
-      cinematic: true,
-      invuln: [0, 12],
-      move: [[0, 2.0], [16, 0]],
-      hits: [
-        { at: 0, len: 3, box: [14, 36, 60, 52], dmg: 7, fx: 'energy', stop: 4, kbx: 0.4, kby: 3.4, hs: 26 },
-        { at: 5, len: 3, box: [14, 32, 62, 56], dmg: 7, fx: 'energy', stop: 4, kbx: 0.4, kby: 2.0, hs: 24 },
-        { at: 10, len: 3, box: [14, 36, 64, 54], dmg: 7, fx: 'energy', stop: 4, kbx: 0.4, kby: 2.0, hs: 24 },
-        {
-          at: 16,
-          len: 6,
-          box: [10, 22, 74, 70],
-          dmg: 24,
-          fx: 'energy',
-          stop: 12,
-          kbx: 7.0,
-          kby: 5.0,
-          knockdown: true,
-          hs: 34,
-          sfx: 'super',
-        },
-      ],
-      desc: 'Fictional cascade of written principles closing into one decisive pronouncement.',
-    }),
-  },
-  routes: [
-    { label: 'Zone string', inputs: 'EL VERDADERO > dash > LIGHT > HEAVY' },
-    { label: 'Trap setup', inputs: 'TRAP SIGIL > LIGHT > AIR LIGHT > AIR HEAVY' },
-    { label: 'Counter reset', inputs: 'POSITION PAPER > EL VERDADERO > HEAVY' },
-    { label: 'Cash-out', inputs: 'LIGHT > LIGHT > HEAVY > DECALOGUE' },
-  ],
-  bio: {
-    historical:
-      'Apolinario Mabini (1864-1903) was a lawyer and political theorist who served as the first Prime Minister and foreign minister of the First Philippine Republic. He drafted key constitutional and policy documents, and he was paralysed by polio in 1896. He was exiled to Guam for refusing to swear allegiance to the United States, returning shortly before his death.',
-    lore:
-      'FICTION: Bayani Brawl represents him with written sigils and controlled space rather than acrobatics, honouring the fact that his real strength was doctrine. All techniques shown are invented.',
-    ending: [
-      'The shadow argues, and loses the argument.',
-      'Mabini closes the book without raising his voice.',
-      '"A republic is a habit, not a monument."',
-      'Clerks copy out the pages, and the copies outlive everyone.',
-    ],
-  },
-  ai: 'zoner',
-  super: 'super',
-  taunt: 'State your terms.',
-  winQuote: 'Argued and settled.',
-  art: { plan: 'strategistSage', palette: 'mabini' },
-  unlocked: false,
-};
-
-// ---------------------------------------------------------------------------
 // 10. TERESA MAGBANUA
 // ---------------------------------------------------------------------------
 const magbanua: FighterDef = {
@@ -663,7 +488,7 @@ const goyo: FighterDef = {
   taunt: 'Too slow!',
   winQuote: 'Held the line.',
   art: { plan: 'youngOfficer', palette: 'goyo' },
-  unlocked: false,
+  unlocked: true,
 };
 
 // ---------------------------------------------------------------------------
@@ -846,5 +671,5 @@ const anino: FighterDef = {
   boss: true,
 };
 
-export const ROSTER_3 = [mabini, magbanua, juanluna, goyo];
+export const ROSTER_3 = [magbanua, juanluna, goyo];
 export const BOSS = anino;
