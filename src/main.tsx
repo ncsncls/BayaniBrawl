@@ -226,12 +226,34 @@ function CharacterSelect(props: {
         <h2>{props.mode.toUpperCase()}</h2>
         <button onClick={() => props.onFight()}>FIGHT</button>
       </header>
-      {props.mode === 'versus' && (
-        <section className="sideSelect">
-          <button className={activeSlot === 0 ? 'active' : ''} onClick={() => setActiveSlot(0)}>PLAYER 1</button>
-          <button className={activeSlot === 1 ? 'active' : ''} onClick={() => setActiveSlot(1)}>PLAYER 2</button>
-        </section>
-      )}
+      <section className="matchSetup">
+        {props.mode === 'versus' && (
+          <>
+            <div className="sideSelect">
+              <button className={activeSlot === 0 ? 'active' : ''} onClick={() => setActiveSlot(0)}>PLAYER 1</button>
+              <button className={activeSlot === 1 ? 'active' : ''} onClick={() => setActiveSlot(1)}>PLAYER 2</button>
+            </div>
+            <div className="versusPicks">
+              <p><span>P1</span><b>{p1.name}</b></p>
+              <p><span>P2</span><b>{p2.name}</b></p>
+            </div>
+          </>
+        )}
+        {props.mode !== 'arcade' && props.mode !== 'versus' && (
+          <label className="enemyPick">
+            CPU
+            <select value={props.enemy} onChange={(e) => props.setEnemy(Number(e.target.value))}>
+              {SELECTABLE.map((x, i) => <option key={x.id} value={i}>{x.name}</option>)}
+            </select>
+          </label>
+        )}
+        <label className="stagePick">
+          ARENA
+          <select value={props.stageId} onChange={(e) => props.setStageId(e.target.value)}>
+            {STAGES.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </label>
+      </section>
       <CharacterPreview fighter={f} />
       <section className="selectGrid">
         {SELECTABLE.map((x, i) => (
@@ -259,26 +281,6 @@ function CharacterSelect(props: {
         <Stat name="SPEED" n={f.stats.speed} />
         <Stat name="DEFENSE" n={f.stats.defense} />
         <Stat name="TECHNIQUE" n={f.stats.technique} />
-        {props.mode !== 'arcade' && props.mode !== 'versus' && (
-          <label className="enemyPick">
-            CPU
-            <select value={props.enemy} onChange={(e) => props.setEnemy(Number(e.target.value))}>
-              {SELECTABLE.map((x, i) => <option key={x.id} value={i}>{x.name}</option>)}
-            </select>
-          </label>
-        )}
-        {props.mode === 'versus' && (
-          <div className="versusPicks">
-            <p><span>PLAYER 1</span><b>{p1.name}</b></p>
-            <p><span>PLAYER 2</span><b>{p2.name}</b></p>
-          </div>
-        )}
-        <label className="stagePick">
-          STAGE
-          <select value={props.stageId} onChange={(e) => props.setStageId(e.target.value)}>
-            {STAGES.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-        </label>
       </aside>
       <section className="movePanel">
         <h3>MOVE LIST</h3>
