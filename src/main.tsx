@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { GameEngine, DEFAULT_RENDER, type EngineOptions, type Snapshot, type TrainingConfig } from './game/GameEngine';
 import type { Difficulty, FighterDef } from './game/types';
 import { BOSS_ID, SELECTABLE, moveList } from './data/fighters';
-import { BOSS_STAGE, HOME_STAGE, STAGES } from './data/stages';
+import { STAGES } from './data/stages';
 import { DEFAULT_P1, DEFAULT_P2, keyboard, mergeState, touch } from './input/sources';
 import type { Btn } from './input/InputBuffer';
 import { audio } from './audio/AudioManager';
@@ -85,7 +85,7 @@ function App() {
   useEffect(() => writeSave(save), [save]);
 
   const hero = SELECTABLE[selected];
-  const foe = SELECTABLE[enemy === selected ? (enemy + 1) % SELECTABLE.length : enemy];
+  const foe = SELECTABLE[enemy] ?? SELECTABLE[(selected + 1) % SELECTABLE.length];
 
   useEffect(() => {
     audio.applySettings({
@@ -155,7 +155,7 @@ function App() {
           setSave={setSave}
           heroId={hero.id}
           foeId={mode === 'arcade' ? nextArcadeOpponent : foe.id}
-          stageId={stageId || (mode === 'arcade' && nextArcadeOpponent === BOSS_ID ? BOSS_STAGE : HOME_STAGE[mode === 'arcade' ? nextArcadeOpponent : foe.id] || STAGES[0].id)}
+          stageId={stageId || STAGES[0].id}
           arcadeStep={arcadeStep}
           setArcadeStep={setArcadeStep}
           onSelect={() => setScreen('select')}
@@ -210,7 +210,15 @@ function CharacterSelect(props: {
   onBack: () => void;
   onFight: () => void;
 }) {
-  const f = SELECTABLE[props.selected];
+  const [activeSlot, setActiveSlot] = useState<0 | 1>(0);
+  const p1 = SELECTABLE[props.selected];
+  const p2 = SELECTABLE[props.enemy] ?? SELECTABLE[(props.selected + 1) % SELECTABLE.length];
+  const f = props.mode === 'versus' && activeSlot === 1 ? p2 : p1;
+  const chooseFighter = (i: number) => {
+    if (props.mode === 'versus' && activeSlot === 1) props.setEnemy(i);
+    else props.setSelected(i);
+  };
+
   return (
     <main className="screen select">
       <header className="topbar">
@@ -218,10 +226,27 @@ function CharacterSelect(props: {
         <h2>{props.mode.toUpperCase()}</h2>
         <button onClick={() => props.onFight()}>FIGHT</button>
       </header>
+      {props.mode === 'versus' && (
+        <section className="sideSelect">
+          <button className={activeSlot === 0 ? 'active' : ''} onClick={() => setActiveSlot(0)}>PLAYER 1</button>
+          <button className={activeSlot === 1 ? 'active' : ''} onClick={() => setActiveSlot(1)}>PLAYER 2</button>
+        </section>
+      )}
       <CharacterPreview fighter={f} />
       <section className="selectGrid">
         {SELECTABLE.map((x, i) => (
-          <button key={x.id} className={i === props.selected ? 'portrait active' : 'portrait'} onClick={() => props.setSelected(i)}>
+          <button
+            key={x.id}
+            className={[
+              'portrait',
+              i === props.selected ? 'p1Pick' : '',
+              props.mode === 'versus' && i === props.enemy ? 'p2Pick' : '',
+              i === (props.mode === 'versus' && activeSlot === 1 ? props.enemy : props.selected) ? 'active' : '',
+            ].filter(Boolean).join(' ')}
+            onClick={() => chooseFighter(i)}
+          >
+            {i === props.selected && <em>P1</em>}
+            {props.mode === 'versus' && i === props.enemy && <em>P2</em>}
             <span>{x.name}</span>
           </button>
         ))}
@@ -234,13 +259,19 @@ function CharacterSelect(props: {
         <Stat name="SPEED" n={f.stats.speed} />
         <Stat name="DEFENSE" n={f.stats.defense} />
         <Stat name="TECHNIQUE" n={f.stats.technique} />
-        {props.mode !== 'arcade' && (
+        {props.mode !== 'arcade' && props.mode !== 'versus' && (
           <label className="enemyPick">
-            {props.mode === 'versus' ? 'PLAYER 2' : 'CPU'}
+            CPU
             <select value={props.enemy} onChange={(e) => props.setEnemy(Number(e.target.value))}>
               {SELECTABLE.map((x, i) => <option key={x.id} value={i}>{x.name}</option>)}
             </select>
           </label>
+        )}
+        {props.mode === 'versus' && (
+          <div className="versusPicks">
+            <p><span>PLAYER 1</span><b>{p1.name}</b></p>
+            <p><span>PLAYER 2</span><b>{p2.name}</b></p>
+          </div>
         )}
         <label className="stagePick">
           STAGE
